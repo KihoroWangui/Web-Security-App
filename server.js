@@ -9,7 +9,7 @@ const authenticateJWT = require("./middleware/auth");
 // Load environment variables
 dotenv.config();
 
-const app = express();
+const app = express(); // Initialize the app here
 app.use(express.json());
 app.use(helmet()); // Set secure HTTP headers
 
@@ -21,9 +21,15 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+// Serve a simple homepage
+app.get("/", (req, res) => {
+  res.send("<h1>Welcome to the Web Security App!</h1>");
+});
+
 app.use("/auth", authRoutes); // Authentication routes
 app.use("/secure", authenticateJWT, secureRoutes); // Protected routes
 
 // Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(5000, () => {
+  console.log("Server is running on http://localhost:5000");
+});
