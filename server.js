@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const authRoutes = require("./routes/auth");
 const secureRoutes = require("./routes/secure");
 const authenticateJWT = require("./middleware/auth");
+const path = require("path");
 
 // Load environment variables
 dotenv.config();
@@ -21,13 +22,17 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Serve a simple homepage
-app.get("/", (req, res) => {
-  res.send("<h1>Welcome to the Web Security App!</h1>");
-});
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, "public")));
 
+// Authentication and protected routes
 app.use("/auth", authRoutes); // Authentication routes
 app.use("/secure", authenticateJWT, secureRoutes); // Protected routes
+
+// If there's no specific route match, fallback to serving login.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html"));
+});
 
 // Start the server
 app.listen(5000, () => {

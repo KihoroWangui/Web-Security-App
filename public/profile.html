@@ -1,0 +1,50 @@
+<!-- profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+  </head>
+  <body>
+    <h1>Profile</h1>
+    <div id="profileData"></div>
+    <button id="logoutButton">Logout</button>
+
+    <script>
+      // Get the JWT token from local storage
+      const token = localStorage.getItem("jwtToken");
+
+      if (!token) {
+        window.location.href = "login.html"; // Redirect to login if no token found
+      }
+
+      // Fetch profile data
+      fetch("http://localhost:5000/secure/profile", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          document.getElementById("profileData").innerHTML = `
+                <p>Welcome, ${data.username}</p>
+                <p>Email: ${data.email}</p>
+            `;
+        })
+        .catch((err) => {
+          alert("Failed to fetch profile. Please login again.");
+          window.location.href = "login.html"; // Redirect to login if JWT is invalid
+        });
+
+      // Handle logout
+      document
+        .getElementById("logoutButton")
+        .addEventListener("click", function () {
+          localStorage.removeItem("jwtToken");
+          window.location.href = "login.html"; // Redirect to login after logout
+        });
+    </script>
+  </body>
+</html>
